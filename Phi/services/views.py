@@ -256,6 +256,14 @@ def get_info(request, username, info):
         return render(request, string, {
             'following': following,
             'followers': followers,
+            'member': member,
+            'like_notifs': layout['like_notifs'],
+            'comment_notifs': layout['comment_notifs'],
+            'follow_notifs': layout['follow_notifs'],
+            'mozakhraf_notifs': layout['mozakhraf_notifs'],
+            'notif_num': layout['notif_num'],
+            'recmovies': layout['recmovies'],
+            'recusers': layout['recusers']
         })
     else:
         login_form = MemberLoginForm()
