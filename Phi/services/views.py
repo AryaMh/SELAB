@@ -25,7 +25,18 @@ class TemplatePost():
         self.comment_num = len(list(models.Comment.objects.filter(post=post)))
         self.comments = list(models.Comment.objects.filter(post=post).order_by('datetime'))
 
-
+def zakhar(template_posts,layout,member):
+    return{
+        'template_posts': template_posts,
+        'member': member,
+        'like_notifs': layout['like_notifs'],
+        'comment_notifs': layout['comment_notifs'],
+        'follow_notifs': layout['follow_notifs'],
+        'mozakhraf_notifs': layout['mozakhraf_notifs'],
+        'notif_num': layout['notif_num'],
+        'recmovies': layout['recmovies'],
+        'recusers': layout['recusers']
+    }
 def home(request):
     if request.user.is_authenticated():
         member = Member.objects.get(user=request.user)
@@ -43,17 +54,7 @@ def home(request):
 
         layout = get_layout(member)
 
-        return render(request, 'view-timeline.html', {
-            'template_posts': template_posts,
-            'member': member,
-            'like_notifs': layout['like_notifs'],
-            'comment_notifs': layout['comment_notifs'],
-            'follow_notifs': layout['follow_notifs'],
-            'mozakhraf_notifs': layout['mozakhraf_notifs'],
-            'notif_num': layout['notif_num'],
-            'recmovies': layout['recmovies'],
-            'recusers': layout['recusers']
-        })
+        return render(request, 'view-timeline.html',zakhar(template_posts,layout,member))
     else:
         login_form = MemberLoginForm()
         reg_form = MemberRegModelForm()
@@ -66,11 +67,13 @@ def home(request):
 def answer(request):
     return render(request, 'FAQ.html')
 
+
 def change_notif(request):
     notif_id = request.GET['notifID']
     notif = models.Notification.objects.get(id=notif_id)
     notif.seen = True
     notif.save()
+
 
 def get_user_profile(request, username):
     if request.user.is_authenticated():
@@ -250,7 +253,6 @@ def get_info(request, username, info):
         if info == 'followee':
             string = follow
 
-
         return render(request, string, {
             'following': following,
             'followers': followers,
@@ -293,17 +295,7 @@ def get_single_post(request, post_id):
 
         layout = get_layout(member)
 
-        return render(request, 'view-single-post.html', {
-            'template_post': template_post,
-            'member': member,
-            'like_notifs': layout['like_notifs'],
-            'comment_notifs': layout['comment_notifs'],
-            'follow_notifs': layout['follow_notifs'],
-            'mozakhraf_notifs': layout['mozakhraf_notifs'],
-            'notif_num': layout['notif_num'],
-            'recmovies': layout['recmovies'],
-            'recusers': layout['recusers']
-        })
+        return render(request, 'view-single-post.html', zakhar(template_post,layout,member))
     else:
         login_form = MemberLoginForm()
         reg_form = MemberRegModelForm()
@@ -471,20 +463,19 @@ def search(request):
             else:
                 members = []
                 movies = []
-
-            return render(request, 'view-search-results.html', {
-                'member': member,
-                'like_notifs': layout['like_notifs'],
-                'comment_notifs': layout['comment_notifs'],
-                'follow_notifs': layout['follow_notifs'],
-                'mozakhraf_notifs': layout['mozakhraf_notifs'],
-                'notif_num': layout['notif_num'],
-                'recmovies': layout['recmovies'],
-                'recusers': layout['recusers'],
-                'members': members,
-                'movies': movies,
-                'word': word
-            })
+            context = {'member': member,
+                    'like_notifs': layout['like_notifs'],
+                    'comment_notifs': layout['comment_notifs'],
+                    'follow_notifs': layout['follow_notifs'],
+                    'mozakhraf_notifs': layout['mozakhraf_notifs'],
+                    'notif_num': layout['notif_num'],
+                    'recmovies': layout['recmovies'],
+                    'recusers': layout['recusers'],
+                    'members': members,
+                    'movies': movies,
+                    'word': word
+                    }
+            return render(request, 'view-search-results.html', context=context)
         else:
             return HttpResponseRedirect('../')
     else:
